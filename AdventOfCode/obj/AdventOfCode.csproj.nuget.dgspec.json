@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj": {}
+    "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj": {}
   },
   "projects": {
-    "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj": {
+    "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj",
+        "projectUniqueName": "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj",
         "projectName": "AdventOfCode",
-        "projectPath": "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj",
+        "projectPath": "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode\\AdventOfCode.csproj",
         "packagesPath": "C:\\Users\\CarriedeLacy\\.nuget\\packages\\",
-        "outputPath": "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode2022\\AdventOfCode\\obj\\",
+        "outputPath": "C:\\Repos\\advent-2022\\AdventOfCode2022\\AdventOfCode\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\CarriedeLacy\\AppData\\Roaming\\NuGet\\NuGet.Config",
