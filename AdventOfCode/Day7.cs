@@ -63,7 +63,6 @@ namespace AdventOfCode
             var totalUsedSpace = directorySizes["/"];
             var unusedSpace = 70000000 - totalUsedSpace;
             var spaceNeeded = 30000000 - unusedSpace;
-            Console.WriteLine($"UsedSpace: {totalUsedSpace}, UnusedSpace: {unusedSpace}, spaceNeeded: {spaceNeeded}");
             var smallestDirectory = directorySizes.Where(c => c.Value > spaceNeeded).OrderBy(c => c.Value).First();
             return smallestDirectory.Value;
         }
