@@ -7,7 +7,7 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
             var day = new Day7();
-            Console.WriteLine(day.Solve7a());
+            Console.WriteLine(day.Solve7b());
         }
     }
 }

@@ -8,60 +8,41 @@ namespace AdventOfCode
 {
     public class Day7
     {
+        private const string dirPattern = @"^dir ";
+        private const string changeDirectoryPattern = @"\$ cd ";
+        private const string backDirectoryPattern = "$ cd ..";
+        private const string listFiles = "$ ls";
+
         public int Solve7a () {
-            Dictionary<string, int> directorySizes = new Dictionary<string, int>();
+            var directorySizes = CalculateDirectorySizes();
+            var smallEnoughFolders = directorySizes.Where(c => c.Value <= 100000).Sum(c => c.Value);
+            return smallEnoughFolders;
+        }
+
+        private Dictionary<string, int> CalculateDirectorySizes(){
             var lines = File.ReadAllLines("./Day7a.txt");
-            string dirPattern = @"dir ";
             var dirRegex = new Regex(dirPattern);
-            string goToRoot = @"\$ cd /";
-            var cdRootRegex = new Regex(goToRoot);
-            string changeDirectoryPattern = @"\$ cd ";
             var cdRegex = new Regex(changeDirectoryPattern);
-            string backDirectoryPattern = "$ cd ..";
-            string listFiles = @"$ ls";
-            var listFilesRegex = new Regex(listFiles);
-            var currentDirectoryTree = new Stack<string>();
-            var directorues = new List<string>();
-            foreach (var line in lines)
+            var currentDirectoryTree = new List<string>();
+
+            Dictionary<string, int> directorySizes = new Dictionary<string, int>();
+            for (int i = 0; i < lines.Count(); i++)
             {
-                if (dirRegex.Matches(line).Any()){
-                    var directory = line.Split(' ')[1];
-                    if (!directorues.Any(c => c == directory)){
-                        directorues.Add(directory);
-                    }
-                }
-
-                if (listFilesRegex.Matches(line).Any()){
-                    Console.WriteLine($"listFilesRegex match {line}");
+                if (dirRegex.Matches(lines[i]).Any() || string.Equals(lines[i], listFiles)){
                     continue;
                 }
 
-                if(cdRootRegex.Matches(line).Any()) {
-                    currentDirectoryTree.Clear();
-                    currentDirectoryTree.Push("/");
-                    Console.WriteLine($"cdRootRegex match {line}");
+                if (string.Equals(lines[i], backDirectoryPattern)) {
+                    currentDirectoryTree = currentDirectoryTree.SkipLast(1).ToList();
                     continue;
                 }
 
-                if (string.Equals(line, backDirectoryPattern)) {
-                    Console.WriteLine($"cdBackRegex match {line}");
-                    if(currentDirectoryTree.TryPeek(out var _)){
-                        currentDirectoryTree.Pop();
-                    }
+                if (cdRegex.Matches(lines[i]).Any()){
+                    currentDirectoryTree.Add(lines[i].Split(' ')[2] + string.Join('/', currentDirectoryTree));
                     continue;
                 }
-
-                if (cdRegex.Matches(line).Any()){
-                    Console.WriteLine($"cdRegex match {line}");
-                    Console.WriteLine(line.Split(' ')[2]);
-                    currentDirectoryTree.Push(line.Split(' ')[2]);
-                    continue;
-                }
-
-                Console.WriteLine($"else {line}");
-                if (int.TryParse(line.Split(' ')[0], out var value)){
-                    Console.WriteLine($"value {value} and tree count {currentDirectoryTree.Count()}");
-
+                
+                if (int.TryParse(lines[i].Split(' ')[0], out var value)){
                     var currentTree = currentDirectoryTree.ToArray();
                     foreach (var folder in currentTree){
                         if (!directorySizes.ContainsKey(folder)){
@@ -73,21 +54,18 @@ namespace AdventOfCode
                     }
                 }
             }
-            foreach (var item in directorySizes.Where(c => c.Value <= 100000))
-            {
-                Console.WriteLine($"{item.Key} - {item.Value}");
-            }
 
-            Console.WriteLine(directorySizes.Where(c => c.Value <= 100000).Count());
-            Console.WriteLine($"Total directories {directorues.Count()}, totla dictionary entries = {directorySizes.Count()}");
-
-            var smallEnoughFolders = directorySizes.Where(c => c.Value <= 100000).Sum(c => c.Value);
-            return smallEnoughFolders;
+            return directorySizes;
         }
 
-        public int Solve6b () {
-            var lines = File.ReadAllLines("./Day6a.txt");
-            return 0;
+        public int Solve7b () {
+            var directorySizes = CalculateDirectorySizes();
+            var totalUsedSpace = directorySizes["/"];
+            var unusedSpace = 70000000 - totalUsedSpace;
+            var spaceNeeded = 30000000 - unusedSpace;
+            Console.WriteLine($"UsedSpace: {totalUsedSpace}, UnusedSpace: {unusedSpace}, spaceNeeded: {spaceNeeded}");
+            var smallestDirectory = directorySizes.Where(c => c.Value > spaceNeeded).OrderBy(c => c.Value).First();
+            return smallestDirectory.Value;
         }
     }
 }
