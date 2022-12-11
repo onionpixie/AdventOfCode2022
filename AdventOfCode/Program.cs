@@ -6,8 +6,8 @@ namespace AdventOfCode
     {
         static void Main(string[] args)
         {
-            var day = new Day9();
-            Console.WriteLine(day.Solve9b());
+            var day = new Day11();
+            Console.WriteLine(day.Solve11a());
         }
     }
 }
