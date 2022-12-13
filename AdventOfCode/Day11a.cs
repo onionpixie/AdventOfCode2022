@@ -6,20 +6,20 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode
 {
-    public class Day11
+    public class Day11a
     {
         internal class Monkey{
             public int Id {get; set;} // Monkey Number
 
-            public List<double> ItemWorryLevel { get; set; } //e.g. 79. 98
+            public List<long> ItemWorryLevel { get; set; } //e.g. 79. 98
 
             public Operation Operator {get; set;}
 
-            public double? OperatorValue {get; set;}
+            public long? OperatorValue {get; set;}
 
             public Operation Test {get; set;} = Operation.Divide;
 
-            public double TestValue {get; set;}
+            public long TestValue {get; set;}
 
             public int TestPostive {get; set;} // Monkey to throw to is test is true
 
@@ -31,7 +31,7 @@ namespace AdventOfCode
 
             public Monkey(int monkeyId){
                 this.Id = monkeyId;
-                this.ItemWorryLevel = new List<double>();
+                this.ItemWorryLevel = new List<long>();
             }
 
             public bool Inspect(){
@@ -60,10 +60,10 @@ namespace AdventOfCode
             }
 
             public void Bored(){
-                ItemWorryLevel[0] = Math.Floor(ItemWorryLevel.First() / 3);
+                ItemWorryLevel[0] = ItemWorryLevel.First() / 3;
             }
 
-             public int ThrowItem(out double itemWorryLevel){
+             public int ThrowItem(out long itemWorryLevel){
                 var monkeyToThrowTo = TestResult();
                 itemWorryLevel = ItemWorryLevel.First();
                 ItemWorryLevel = ItemWorryLevel.TakeLast(ItemWorryLevel.Count() - 1).ToList();
@@ -75,20 +75,8 @@ namespace AdventOfCode
                 return itemToTest % TestValue == 0;
             }
 
-            public void RecieveItem(double itemWorryLevel){
+            public void RecieveItem(long itemWorryLevel){
                 ItemWorryLevel.Add(itemWorryLevel);
-            }
-
-            public void Divide(){
-                double DivideBy = 1000000;
-                var newItemWorries = new List<double>();
-                foreach (var item in ItemWorryLevel)
-                {
-                    newItemWorries.Add(item / DivideBy);
-                }
-                ItemWorryLevel = newItemWorries;
-                TestValue = TestValue / DivideBy;
-                OperatorValue = OperatorValue.HasValue ? OperatorValue / DivideBy : null;
             }
 
             public enum Operation{
@@ -124,42 +112,6 @@ namespace AdventOfCode
             foreach (var monkey in mostBusyMonkeys)
             {
                 Console.WriteLine($"{monkey.Id}: {monkey.InspectionCount}");
-                answer = answer * monkey.InspectionCount;
-            }
-            return answer;
-        }
-
-        public int Solve11b () {
-            var monkeys = ProcessInputIntoMonkeys();
-            for (int k = 0; k < 10000; k++)
-            {
-                for (int i = 0; i < monkeys.Count(); i++)
-                {
-                    var currentMonkey = monkeys.Single(m => m.Id == i);
-                    while(currentMonkey.ItemWorryLevel.Any())
-                    {
-                        while (!currentMonkey.Inspect()){
-                            Console.WriteLine("Too big!");
-                            monkeys.ForEach(x => x.Divide());
-                        }
-                        var monkeyToCatch = currentMonkey.ThrowItem(out var itemWorryLevel);
-                        monkeys.Single(m => m.Id == monkeyToCatch).RecieveItem(itemWorryLevel);
-                    }
-                }   
-
-                if ((k+1) % 1000 == 0 || k+1==20 || k+1==1){
-                Console.WriteLine($"Round {k + 1}");
-                Console.WriteLine($"Monkey 0: {monkeys.Single(m => m.Id == 0).InspectionCount}");
-                Console.WriteLine($"Monkey 1: {monkeys.Single(m => m.Id == 1).InspectionCount}");
-                Console.WriteLine($"Monkey 2: {monkeys.Single(m => m.Id == 2).InspectionCount}");
-                Console.WriteLine($"Monkey 3: {monkeys.Single(m => m.Id == 3).InspectionCount}");
-                } 
-            }
-            var mostBusyMonkeys = monkeys.OrderByDescending(m => m.InspectionCount).Take(2);
-            var answer = 1;
-            foreach (var monkey in mostBusyMonkeys)
-            {
-                Console.WriteLine(monkey.InspectionCount);
                 answer = answer * monkey.InspectionCount;
             }
             return answer;
@@ -220,7 +172,7 @@ namespace AdventOfCode
                             currentMonkey.OperatorValue = null;
                             break;
                         default:
-                             if (double.TryParse(operatorValue, out var value)){
+                             if (long.TryParse(operatorValue, out var value)){
                                 currentMonkey.OperatorValue = value;
                              }
                              else throw new Exception($"what is this value {operatorValue}");
@@ -229,7 +181,7 @@ namespace AdventOfCode
                 }
 
                 if (lines[i].Contains("Test: ")){
-                    if (double.TryParse(lines[i].Replace("  Test: divisible by ", ""), out var testValue)){
+                    if (long.TryParse(lines[i].Replace("  Test: divisible by ", ""), out var testValue)){
                         currentMonkey.TestValue = testValue;
                         i += 1;
                         int.TryParse(lines[i].Replace("    If true: throw to monkey ", ""), out var testPostiveValue);

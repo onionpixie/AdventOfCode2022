@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode
 {
-    public class Day11Alt
+    public class Day11b
     {
         internal class Monkey{
             public int Id {get; set;} // Monkey Number
@@ -69,10 +69,7 @@ namespace AdventOfCode
 
             public bool TestResult(){
                 var itemToTest = ItemWorryLevel.First();
-                if (itemToTest.Divisors[(int)TestValue]){
-                    Console.Write("");
-                }
-                return itemToTest.Divisors[(int)TestValue];
+                return itemToTest.Divisors[(int)TestValue] == 0;
             }
 
             public void RecieveItem(ItemWorry itemWorryLevel){
@@ -87,20 +84,17 @@ namespace AdventOfCode
 
             public class ItemWorry{
                 public int Value { get; set; }
-                public Dictionary<int, bool> Divisors { get; set; }
-
-                public Dictionary<int, int> Additions { get; set; }
+                public Dictionary<int, int> Divisors { get; set; }
 
                 public ItemWorry(int value){
                     this.Value = value;
-                    this.Divisors = new Dictionary<int, bool>();
-                    this.Additions = new Dictionary<int, int>();
+                    this.Divisors = new Dictionary<int, int>();
                 }
 
                 public void Add(int addValue){
-                    foreach (var item in Additions)
+                    foreach (var item in Divisors)
                     {
-                        Additions[item.Key] = Additions[item.Key] + addValue;
+                        Divisors[item.Key] = Divisors[item.Key] + addValue;
                     }
                     UpdateDivisors();
                 }
@@ -108,89 +102,39 @@ namespace AdventOfCode
                 public void Double(){
                     foreach (var item in Divisors)
                     {
-                        if ((Value + Additions[item.Key]) % item.Key == 0){
-                            Divisors[item.Key] = true;
-                        }
-                        //Additions[item.Key] = Additions[item.Key] * Additions[item.Key];
+                        Divisors[item.Key] = Divisors[item.Key] * Divisors[item.Key];
                     }
+                    UpdateDivisors();
                 }
 
                 public void Multiply(int multiple){
                     foreach (var item in Divisors)
                     {
-                        if (multiple % item.Key == 0){
-                            Divisors[item.Key] = true;
-                        }
-                        //Additions[item.Key] = Additions[item.Key] * multiple;
+                        Divisors[item.Key] = Divisors[item.Key] * multiple;
                     }
+                    UpdateDivisors();
                 }
 
                 private void UpdateDivisors(){
                     foreach (var item in Divisors)
                     {
-                        if (Additions[item.Key] == 0){
-                            continue;
-                        }
-                        else if ((Value + Additions[item.Key]) % item.Key == 0){
-                            Divisors[item.Key] = true;
-                            Additions[item.Key] = 0;
-                        }
-                        else{
-                            Divisors[item.Key] = false;
-                        }
+                        Divisors[item.Key] = Divisors[item.Key] % item.Key;
                     }
                 }
 
                 internal void SetDivisors(int[] divisors)
                 {
                     foreach (var item in divisors){
-                        Divisors.Add(item, Value % item == 0);
-                        Additions.Add(item, 0);
+                        Divisors.Add(item, Value % item);
                     }
                 }
             }
         }
 
-        public int Solve11a () {
+        public long Solve11b () {
             var monkeys = ProcessInputIntoMonkeys();
-            for (int k = 0; k < 20; k++)
-            {
-                for (int i = 0; i < monkeys.Count(); i++)
-                {
-                    var currentMonkey = monkeys.Single(m => m.Id == i);
-                    while(currentMonkey.ItemWorryLevel.Any())
-                    {
-                        currentMonkey.Inspect();
-                        currentMonkey.Bored();
-                        var monkeyToCatch = currentMonkey.ThrowItem(out var itemWorryLevel);
-                        monkeys.Single(m => m.Id == monkeyToCatch).RecieveItem(itemWorryLevel);
-                    }
-                }   
-
-                Console.WriteLine($"After Round {k+1}");
-                 Console.WriteLine($"Monkey 0: {string.Join(", ", monkeys.Single(m => m.Id == 0).ItemWorryLevel.Select(x => x.Value.ToString()).ToArray())}");
-                 Console.WriteLine($"Monkey 1: {string.Join(", ", monkeys.Single(m => m.Id == 1).ItemWorryLevel.Select(x => x.Value.ToString()).ToArray())}");
-                 Console.WriteLine($"Monkey 2: {string.Join(", ", monkeys.Single(m => m.Id == 2).ItemWorryLevel.Select(x => x.Value.ToString()).ToArray())}");
-                 Console.WriteLine($"Monkey 3: {string.Join(", ", monkeys.Single(m => m.Id == 3).ItemWorryLevel.Select(x => x.Value.ToString()).ToArray())}");
-               // Console.WriteLine($"Monkey 2: {monkeys.Single(m => m.Id == 2).InspectionCount}");
-            }
-            Console.WriteLine($"Monkey 0: {monkeys.Single(m => m.Id == 0).InspectionCount}");
-            Console.WriteLine($"Monkey 1: {monkeys.Single(m => m.Id == 1).InspectionCount}");
-            Console.WriteLine($"Monkey 2: {monkeys.Single(m => m.Id == 2).InspectionCount}");
-            Console.WriteLine($"Monkey 3: {monkeys.Single(m => m.Id == 3).InspectionCount}");
-            var mostBusyMonkeys = monkeys.OrderByDescending(m => m.InspectionCount).Take(2);
-            var answer = 1;
-            foreach (var monkey in mostBusyMonkeys)
-            {
-                Console.WriteLine($"{monkey.Id}: {monkey.InspectionCount}");
-                answer = answer * monkey.InspectionCount;
-            }
-            return answer;
-        }
-
-        public int Solve11b () {
-            var monkeys = ProcessInputIntoMonkeys();
-            for (int k = 0; k < 20; k++)
+            Console.WriteLine(monkeys.Count());
+            for (int k = 0; k < 10000; k++)
             {
                 for (int i = 0; i < monkeys.Count(); i++)
                 {
@@ -199,9 +143,10 @@ namespace AdventOfCode
                     {
                         currentMonkey.Inspect();
                         var monkeyToCatch = currentMonkey.ThrowItem(out var itemWorryLevel);
+                        if (monkeys.SingleOrDefault(m => m.Id == monkeyToCatch) == null){
+                            Console.WriteLine(monkeyToCatch);
+                        }
                         monkeys.Single(m => m.Id == monkeyToCatch).RecieveItem(itemWorryLevel);
-                        
-                        Console.WriteLine($"Monkey {i} throw to Monkey {monkeyToCatch}");
                     }
                 }   
 
@@ -214,7 +159,7 @@ namespace AdventOfCode
                 } 
             }
             var mostBusyMonkeys = monkeys.OrderByDescending(m => m.InspectionCount).Take(2);
-            var answer = 1;
+            long answer = 1;
             foreach (var monkey in mostBusyMonkeys)
             {
                 Console.WriteLine(monkey.InspectionCount);
