@@ -28,10 +28,12 @@ namespace AdventOfCode
                 var leftValue = signal[nextLine].ToCharArray();
                 var rightValue = signal[nextLine+1].ToCharArray();
 
-                var currentLeftNumbers = new List<int>();
-                var currentRightNumbers = new List<int>();
+                //var currentLeftNumbers = new List<int>();
+                //var currentRightNumbers = new List<int>();
                 for (int j = 0; j < leftValue.Count(); j++)
                 {
+                    var currentLeftNumber = 0;
+                    var currentRightNumber = 0;
                     if (rightValue.Count() -1 == j){
                         break;
                     }
@@ -47,34 +49,44 @@ namespace AdventOfCode
 
                     switch(leftValue[j]){
                         case ',':
+                        case ']':
+                        case '[':
                         break;
                         default:
                             if (leftValue[j-1] != ','){
                                 // do nothing we were in a 10 or similar
                             }
                             else if (leftValue[j+1] != ','){
-                                currentLeftNumbers.Add(int.Parse($"{leftValue[j]} + {leftValue[j+1]}"));
+                                currentLeftNumber = int.Parse($"{leftValue[j]} + {leftValue[j+1]}");
+                                //currentLeftNumbers.Add(int.Parse($"{leftValue[j]} + {leftValue[j+1]}"));
                             }
                             else{
-                                currentLeftNumbers.Add(int.Parse($"{leftValue[j]}"));
+                                currentLeftNumber = int.Parse($"{leftValue[j]}";
+                                //currentLeftNumbers.Add(int.Parse($"{leftValue[j]}"));
                             }
                         break;
                     }
                    
                     switch(rightValue[j]){
                         case ',':
+                        case ']':
+                        case '[':
                         break;
                         default:
                             if (rightValue[j-1] != ','){
                                 // do nothing we were in a 10 or similar
                             }
                             else if (rightValue[j+1] != ','){
-                                currentRightNumbers.Add(int.Parse($"{rightValue[j]} + {rightValue[j+1]}"));
+                                currentRightNumber = int.Parse($"{rightValue[j]} + {rightValue[j+1]}");
+                                //currentRightNumbers.Add(int.Parse($"{rightValue[j]} + {rightValue[j+1]}"));
                             }
                             else{
-                                currentRightNumbers.Add(int.Parse($"{rightValue[j]}"));
+                                currentRightNumber = int.Parse($"{rightValue[j]}");
+                                //currentRightNumbers.Add(int.Parse($"{rightValue[j]}"));
                             }
                         break;
+
+                        if (currentLeftNumber)
                     }
                 }
             }
